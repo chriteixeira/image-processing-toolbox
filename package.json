@@ -1,0 +1,28 @@
+{
+  "name": "image-processing-toolbox",
+  "version": "0.0.1",
+  "description": "A set of functions for image processing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chriteixeira/image-processing-toolbox.git"
+  },
+  "keywords": [
+    "Image",
+    "Image",
+    "processing",
+    "toolbox"
+  ],
+  "author": "Christiano Teixeira",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chriteixeira/image-processing-toolbox/issues"
+  },
+  "homepage": "https://github.com/chriteixeira/image-processing-toolbox#readme",
+  "dependencies": {
+    "readimage": "^1.1.1"
+  }
+}
