@@ -14,7 +14,9 @@
     "Image",
     "Image",
     "processing",
-    "toolbox"
+    "toolbox",
+    "image operations",
+    "image difference"
   ],
   "author": "Christiano Teixeira",
   "license": "MIT",

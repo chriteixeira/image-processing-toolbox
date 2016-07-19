@@ -14,6 +14,40 @@ ImageToolbox.prototype.imageDiff = function(image1Path, image2Path){
     var image2Data = null;
 
     function calculateDiff(){
+        if(image1Data !== undefined && image2Data !== undefined){
+
+            console.log(image1Data);
+
+            var result = [];
+
+            for(var i=0; i < image1Data.data.length; i+=4){
+                var r1 = image1Data.data[i];
+                var g1 = image1Data.data[i+1];
+                var b1 = image1Data.data[i+2];
+                var a1 = image1Data.data[i+3];
+                var r2 = image2Data.data[i];
+                var g2 = image2Data.data[i+1];
+                var b2 = image2Data.data[i+2];
+                var a2 = image2Data.data[i+3];
+                if(r1 !== r2 || 
+                    b1 !== b2 ||
+                    r1 !== r2){
+                        result.push(255);
+                        result.push(255);
+                        result.push(255);
+                        result.push(0);
+                }
+                else{
+                    result.push(0);
+                    result.push(0);
+                    result.push(0);
+                    result.push(0);
+                }
+
+                //TODO: write image to file
+            }
+        }
+
     }
 
     readimage(file1, function(err, image){
@@ -30,12 +64,12 @@ ImageToolbox.prototype.imageDiff = function(image1Path, image2Path){
 
 ImageToolbox.prototype.readImage = function(filename, callback){
     var imageData = fs.readFileSync(filename);
-    var cb = callback;
-    readimage(imageData, cb(err, image));
+    readimage(imageData, callback);
 };
 
 var im = new ImageToolbox();
 
-im.readImage('test/img.png');
+//im.readImage('test/img.png', function(){});
+im.imageDiff('test/img.png','test/img.png');
 
 module.exports = ImageToolbox;
