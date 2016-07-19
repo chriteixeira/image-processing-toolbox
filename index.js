@@ -1,6 +1,7 @@
 'use strict'
 const fs = require('fs');
 const readimage = require("readimage");
+var PNG = require("pngjs").PNG;
 
 var ImageToolbox = function(){
 
@@ -14,38 +15,42 @@ ImageToolbox.prototype.imageDiff = function(image1Path, image2Path){
     var image2Data = null;
 
     function calculateDiff(){
-        if(image1Data !== undefined && image2Data !== undefined){
+        if(image1Data !== null && image2Data !== null){
 
             console.log(image1Data);
+            console.log(image2Data);
 
-            var result = [];
+            var result = new PNG({width: image1Data.width, heigth: image1Data.heigth});
+            result.data = [];
 
-            for(var i=0; i < image1Data.data.length; i+=4){
-                var r1 = image1Data.data[i];
-                var g1 = image1Data.data[i+1];
-                var b1 = image1Data.data[i+2];
-                var a1 = image1Data.data[i+3];
-                var r2 = image2Data.data[i];
-                var g2 = image2Data.data[i+1];
-                var b2 = image2Data.data[i+2];
-                var a2 = image2Data.data[i+3];
+            for(var i=0; i < image1Data.frames[0].data.length; i+=4){
+                var r1 = image1Data.frames[0].data[i];
+                var g1 = image1Data.frames[0].data[i+1];
+                var b1 = image1Data.frames[0].data[i+2];
+                var a1 = image1Data.frames[0].data[i+3];
+                var r2 = image2Data.frames[0].data[i];
+                var g2 = image2Data.frames[0].data[i+1];
+                var b2 = image2Data.frames[0].data[i+2];
+                var a2 = image2Data.frames[0].data[i+3];
+
                 if(r1 !== r2 || 
                     b1 !== b2 ||
                     r1 !== r2){
-                        result.push(255);
-                        result.push(255);
-                        result.push(255);
-                        result.push(0);
+                        result.data[i] = 0xff;
+                        result.data[i+1] = 0xff;
+                        result.data[i+2] = 0xff;
+                        result.data[i+3] = 0xff;
                 }
                 else{
-                    result.push(0);
-                    result.push(0);
-                    result.push(0);
-                    result.push(0);
+                    result.data[i] = 0xff;
+                    result.data[i+1] = 0xff;
+                    result.data[i+2] = 0xff;
+                    result.data[i+3] = 0xff;
                 }
-
-                //TODO: write image to file
             }
+            result.pack().pipe(fs.createWriteStream('result.png')).on('close', function(){
+                console.log('Result done!');
+            });
         }
 
     }

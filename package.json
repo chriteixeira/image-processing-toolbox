@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/chriteixeira/image-processing-toolbox#readme",
   "dependencies": {
+    "pngjs": "^2.3.1",
     "readimage": "^1.1.1"
   }
 }
