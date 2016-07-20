@@ -7,7 +7,7 @@ var ImageToolbox = function(){
 
 };
 
-ImageToolbox.prototype.invert() = function(imagePath){
+ImageToolbox.prototype.invert = function(imagePath){
     fs.createReadStream(imagePath)
         .pipe(new PNG({
             filterType: 4
@@ -32,55 +32,12 @@ ImageToolbox.prototype.invert() = function(imagePath){
         });
 };
 
-ImageToolbox.prototype.imageDiff = function(image1Path, image2Path){
+ImageToolbox.prototype.imageDiff = function(image1Path, image2Path, properties){
     var file1 = fs.readFileSync(image1Path);
     var file2 = fs.readFileSync(image2Path);
 
     var image1Data = null;
     var image2Data = null;
-
-    function calculateDiff(){
-        if(image1Data !== null && image2Data !== null){
-
-            console.log(image1Data);
-            console.log(image2Data);
-
-            var result = new PNG({width: image1Data.width, height: image1Data.height});
-            var resultData = [];
-
-            console.log(image1Data.frames[0].data.length);
-
-            for(var i=0; i < image1Data.frames[0].data.length; i+=4){
-                var r1 = image1Data.frames[0].data[i];
-                var g1 = image1Data.frames[0].data[i+1];
-                var b1 = image1Data.frames[0].data[i+2];
-                var a1 = image1Data.frames[0].data[i+3];
-                var r2 = image2Data.frames[0].data[i];
-                var g2 = image2Data.frames[0].data[i+1];
-                var b2 = image2Data.frames[0].data[i+2];
-                var a2 = image2Data.frames[0].data[i+3];
-
-                if(r1 !== r2 || 
-                    b1 !== b2 ||
-                    r1 !== r2){
-                        resultData[i] = 0x00;
-                        resultData[i+1] = 0xff;
-                        resultData[i+2] = 0xff;
-                        resultData[i+3] = 0x00;
-                }
-                else{
-                    resultData[i] = 0x00;
-                    resultData[i+1] = 0xff;
-                    resultData[i+2] = 0xff;
-                    resultData[i+3] = 0x00;
-                }
-            }
-            result.data = new Buffer(resultData);
-            console.log(result);
-            result.pack().pipe(fs.createWriteStream('result.png'));
-        }
-
-    }
 
     readimage(file1, function(err, image){
         image1Data = image;
@@ -92,17 +49,76 @@ ImageToolbox.prototype.imageDiff = function(image1Path, image2Path){
         calculateDiff();
     });
 
+    function calculateDiff(){
+        if(image1Data !== null && image2Data !== null){
+
+            var result = {
+                width: image1Data.width,
+                height: image1Data.height,
+                data: [],
+                diffAvg: 0.0
+            };
+            
+            var resultData = [];
+
+            for(var i=0; i < image1Data.frames[0].data.length; i+=4){
+                var r1 = image1Data.frames[0].data[i];
+                var g1 = image1Data.frames[0].data[i+1];
+                var b1 = image1Data.frames[0].data[i+2];
+                var a1 = image1Data.frames[0].data[i+3];
+                var r2 = image2Data.frames[0].data[i];
+                var g2 = image2Data.frames[0].data[i+1];
+                var b2 = image2Data.frames[0].data[i+2];
+                var a2 = image2Data.frames[0].data[i+3];
+
+                //Calculate the level of difference for each color (alpha will be ignored)
+                var diffR = Math.abs(r1-r2);
+                var diffG = Math.abs(g1-g2);
+                var diffB = Math.abs(b1-b2);
+                
+                //Average diff
+                var diffAvg = (diffR + diffG + diffB) / 3;
+                
+                if(diffAvg == 0){
+                        resultData[i] = 0xff;
+                        resultData[i+1] = 0xff;
+                        resultData[i+2] = 0xff;
+                        resultData[i+3] = 0xff;
+                }
+                else{
+                    resultData[i] = 0x00;
+                    resultData[i+1] = 0x00;
+                    resultData[i+2] = 0x00;
+                    resultData[i+3] = 0xff;
+                }
+            }
+            result.data = new Buffer(resultData);
+            //TODO add diff avg to the result
+        }
+
+    }
+
 };
+
+//Functions to add
+//scale
+//tranforms
+//pattern match
+//filters
 
 ImageToolbox.prototype.readImage = function(filename, callback){
     var imageData = fs.readFileSync(filename);
     readimage(imageData, callback);
 };
 
+ImageToobox.prototype.saveToPNGFile = function(filename, callback){
+    
+}
+
 var im = new ImageToolbox();
 
 //im.readImage('test/img.png', function(){});
-im.imageDiff('test/img.png','test/img.png');
+im.imageDiff('test/img.png','test/img2.png');
 
 
 module.exports = ImageToolbox;
