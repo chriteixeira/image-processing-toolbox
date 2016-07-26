@@ -2,7 +2,7 @@
   "name": "image-processing-toolbox",
   "version": "0.0.1",
   "description": "A set of functions for image processing.",
-  "main": "index.js",
+  "main": "ImageToolbox.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -27,5 +27,8 @@
   "dependencies": {
     "pngjs": "^2.3.1",
     "readimage": "^1.1.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3"
   }
 }
